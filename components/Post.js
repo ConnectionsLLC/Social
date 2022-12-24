@@ -53,6 +53,11 @@ const PostBody = ({ post }) => (
                 <Image style={{ alignSelf: "stretch", height: 400, marginLeft: 15, marginRight: 15, borderRadius: 10, }} source={{ uri: post?.image }} />
    )}
     </View>
+    <View style={{marginTop: 15,marginRight: 15, marginLeft: 15, flexDirection: "row"}}>
+        <Text style={{color: 'grey', fontStyle: 'bold'}}>10:00 PM</Text>
+        <Text>   |   </Text>
+        <Text style={{ color: 'grey'}}>24th December 2022</Text>
+    </View>
     </View>
 )
 const PostFooter = ({ post }) => (

@@ -1,13 +1,13 @@
 import React from 'react'
 import Header from '../components/Header'
-import { View, Text, Image, Button, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text, Image, Button, Pressable, TouchableOpacity, StyleSheet } from 'react-native'
 import { useEffect, useState } from 'react'
 import firebase from '../firebase';
 import useAuth from '../hooks/useAuth'
 import { onSnapshot, query, doc, collection, where } from 'firebase/firestore'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import EditProfile from '../components/EditProfile';
+
 
 
 const EditProfile = () => {

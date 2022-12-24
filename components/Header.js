@@ -14,7 +14,7 @@ const Header = () => {
 
 
   return (
-    <View style={{backgroundColor: 'white'}}>
+    <View style={{backgroundColor: 'white', marginTop: 30}}>
       <View style={styles.container}>
         <TouchableOpacity>
           {/* <Image style={styles.logo} source={{ uri: 'https://th.bing.com/th/id/R.cd2b3b973a2d0abae68440b004408162?rik=sK9pHDx0a7m7jg&riu=http%3a%2f%2f2.bp.blogspot.com%2f-4pBaE9sDqjg%2fUYNzlT_tL9I%2fAAAAAAAAZck%2fPhzqPJx3le8%2fs1600%2fInstragram%2blogo.png&ehk=ZOXB2HBBimcrm%2fakCFvwsTMuHJbNdmNGO57a%2bem5nlc%3d&risl=&pid=ImgRaw&r=0' }} /> */}

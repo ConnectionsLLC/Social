@@ -1,13 +1,13 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Pressable } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Pressable, ImagePickerIOS } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialIcons } from '@expo/vector-icons';
 import firebase from '.././firebase';
-import { onSnapshot, query, doc, collection, where } from 'firebase/firestore'
+import { onSnapshot, query, doc, collection, where, updateDoc } from 'firebase/firestore'
 import { useNavigation } from '@react-navigation/native';
 import useAuth from '../hooks/useAuth';
-
-
+import * as ImagePicker from 'expo-image-picker';
+import {uploadBytes, ref} from 'firebase/storage'
 
 const PlusBody = () => {
   const navigation = useNavigation()
@@ -15,6 +15,25 @@ const PlusBody = () => {
 
   const [text, onChangeText] = useState("");
   const [userInfo, setUserInfo] = useState([])
+
+  const [image, setImage] = useState(null);
+
+const uploadImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      console.log(image.fileName)
+    }
+  };
 
 useEffect(() => {
   firebase.firestore().collection('users')
@@ -31,8 +50,15 @@ useEffect(() => {
 },[])
 
 
-const SubmitPost = () => {
- const upload = firebase.firestore().collection("users").doc(user.email).collection('posts').add({
+const SubmitPost = async () => {
+if(image){
+const imageRef = ref(firebase.storage(), `images/${image}`)
+ uploadBytes(imageRef, image).then(() => {
+  console.log("Image Uploaded!")
+ })
+}
+
+ const upload = await firebase.firestore().collection("users").doc(user.email).collection('posts').add({
   username: userInfo.username,
    profilePicture: userInfo.profilePicture,
    owner_uid: user.uid, 
@@ -43,13 +69,19 @@ likes_by_users: [],
 comments: [],
   lowerUsername: "@" + userInfo.username.replace(/\s+/g,'').toLowerCase(),
  })
+
+ 
+ console.log("ImageUploaded!")
+
 navigation.goBack()
  onChangeText("")
 }
 
+
+
   return (
     
-    <View>
+    <View  style={{backgroundColor: 'white',}}>
       <View style={styles.container1}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
@@ -89,12 +121,12 @@ navigation.goBack()
           <View style={{ flexDirection: "row", margin: 12}}>
             <Ionicons name="ios-globe-outline" size={16} color="#0096F6" style={{ marginLeft: 2 }} />
             <Text style={{ color: '#0096F6', marginLeft: 2, alignItems: 'center', marginBottom: 4, fontWeight: '600' }}>Everyone can reply</Text>
-          </View>
-          <View style={{margin: 12, flexDirection: 'row'}}>
-<TouchableOpacity>
+                 </View>
+             <View style={{margin: 12, flexDirection: 'row'}}>
+                 <TouchableOpacity onPress={uploadImage}>
               <MaterialIcons name="image" size={24} color="#0096F6" style={{marginLeft: 2}}/>
-</TouchableOpacity>
-<TouchableOpacity >
+               </TouchableOpacity>
+            <TouchableOpacity >
               <MaterialIcons name="poll" size={24} color="#0096F6" style={{marginLeft: 10}}/>
 </TouchableOpacity>
             <TouchableOpacity >
@@ -104,6 +136,7 @@ navigation.goBack()
               <MaterialIcons name="my-location" size={24} color="#0096F6" style={{marginLeft: 10}}/>
             </TouchableOpacity>
           </View>
+          {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
       </View>
 
       </View>

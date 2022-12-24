@@ -38,7 +38,7 @@ const HomeScreen = () => {
 }
 const styles = StyleSheet.create({
   container: {
-   
+     backgroundColor: 'white'
   },
 });
 

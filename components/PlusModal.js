@@ -1,18 +1,20 @@
-import { View, Text, Modal } from 'react-native'
+import { View, Text, Modal, StyleSheet } from 'react-native'
 import React from 'react'
 import { withSafeAreaInsets } from 'react-native-safe-area-context'
+import PlusBody from './PlusBody'
 
 const PlusModal = () => {
   return (
-    <View style={{height: 20}}>
-    
-
-       <View style={{flex: 1, backgroundColor: "white", justifyContent: "flex-end", height: 10 }}>
-                  <Text>Hello I am the modal Components</Text>
-       </View>
-      
+    <View style={styles.container}>
+  
+     <PlusBody/>
     </View>
   )
 }
+const styles = StyleSheet.create({
+  container: {
+  marginTop: 8,
+  },
+});
 
 export default PlusModal

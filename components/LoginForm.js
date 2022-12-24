@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Validator from 'email-validator'
-import firebase from '../firebase'
+import  firebase  from '../firebase'
 import useAuth from '../hooks/useAuth'
 import { useNavigation } from '@react-navigation/native'
 
@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native'
 const LoginForm = () => {
 
   const navigation = useNavigation()
+
   const { user } = useAuth()
 
 
@@ -26,7 +27,7 @@ const LoginForm = () => {
     const onLogin = async (email, password) => {
       try{
       await firebase.auth().signInWithEmailAndPassword(email, password)
-      
+      await firebase.auth().setPersistence(firebase.auth(), firebase.auth().inMemoryPersistence)
       console.log("Login Success! 🔥", email, password)
       } catch(error) {
         console.log(error.message);
@@ -96,7 +97,7 @@ const LoginForm = () => {
               </Pressable>
               <View style={styles.signupContainer}>
                   <Text>Don't have an account yet?   </Text>
-              <TouchableOpacity onPress={() => navigation.push('Signup')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
                       <Text style={{ color: '#6BB0F5' }} >Signup</Text>
                   </TouchableOpacity>
               </View>

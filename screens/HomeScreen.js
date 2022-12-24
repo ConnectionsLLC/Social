@@ -1,23 +1,35 @@
 import { View, Text, Button, StyleSheet, ScrollView } from 'react-native'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { useNavigation } from '@react-navigation/native'
 import  Header  from '../components/Header'
 import Stories from '../components/Stories'
-import Posts from '../components/Posts'
+import firebase from '../firebase'
 import Post from '../components/Post'
 import PlusModal from '../components/PlusModal'
+import { orderBy } from 'firebase/firestore'
+
 
 const HomeScreen = () => {
-   const navigation = useNavigation()
+  const navigation = useNavigation()
+  
+  const [posts, setPosts] = useState([])
+  
+  useEffect(() => {
+    firebase.firestore().collectionGroup('posts').onSnapshot(snapshot => {
+    setPosts(snapshot.docs.map(doc => doc.data()))
+   })
+   
+  },[])
   return (
 
     <View style={styles.container}>
       <Header/>
-
        <ScrollView>
         <Stories />
-        <Posts/>
-        <PlusModal />
+        {posts.map((post,index) => (
+        <Post post={post} key={index}/>
+))}
+
         </ScrollView> 
      
       {/* <Button title='Go To Chat' onPress={() => navigation.navigate('Chat')}/> */}
@@ -26,7 +38,7 @@ const HomeScreen = () => {
 }
 const styles = StyleSheet.create({
   container: {
-   marginTop: 40,
+   
   },
 });
 

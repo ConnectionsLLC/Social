@@ -3,7 +3,7 @@ import React from 'react'
 
 const Stories = () => {
   return (
-      <View style={{ marginBottom: 13, }}>
+      <View style={{ marginBottom: 13,marginTop: 10 }}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
 
               <View style={{ alignItems: 'center', }}>

@@ -8,20 +8,25 @@ import useAuth from './hooks/useAuth';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SignupScreen from './screens/SignupScreen';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import HomeNavigation from './Navigation/HomeNavigation';
+import ProfileScreen from './screens/ProfileScreen';
+import ProfileNavigaton from './Navigation/ProfileNavigation';
 
 
 const Stack = createBottomTabNavigator();
-const Stack2 = createNativeStackNavigator();
+const Sck2ta = createNativeStackNavigator();
 
 const StackNavigator = () => {
   const { user } = useAuth()
+  
+
   
   
   return (
 
     
    
-          <Stack.Navigator 
+<Stack.Navigator 
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
@@ -33,16 +38,39 @@ const StackNavigator = () => {
           let iconColor;
 
           if (route.name === 'Home') {
+
             iconName = focused
               ? 'home'
               : 'home-outline';
-              iconColor = focused
-              ? 'blue'
-              : "black"
-          } else if (route.name === 'Chat') {
-            iconName = focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline';
             iconColor = focused
-              ? 'blue'
+              ? 'black'
+              : "black"
+          } else if (route.name === 'Profile') {
+
+            iconName = focused ? 'person' : 'person-outline';
+            iconColor = focused
+              ? 'black'
+              : "black"
+          }
+          else if (route.name === 'Chat') {
+
+            iconName = focused ? 'chatbubble' : 'chatbubble-outline';
+            iconColor = focused
+              ? 'black'
+              : "black"
+          }
+          else if (route.name === 'Login') {
+
+            iconName = focused ? 'person' : 'person-outline';
+            iconColor = focused
+              ? 'black'
+              : "black"
+          }
+          else if (route.name === 'Signup') {
+
+            iconName = focused ? 'person-add' : 'person-add-outline';
+            iconColor = focused
+              ? 'black'
               : "black"
           }
 
@@ -55,8 +83,11 @@ const StackNavigator = () => {
       })}>
             {user ? (
               <>
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Home" component={HomeNavigation}  />
           <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="Profile" component={ProfileNavigaton} />
+
+         
           </>
             ) : (
               <>

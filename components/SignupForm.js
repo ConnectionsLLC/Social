@@ -4,7 +4,6 @@ import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Validator from 'email-validator'
 import firebase from '../firebase'
-import {db} from '../firebase'
 import useAuth from '../hooks/useAuth'
 import { useNavigation } from '@react-navigation/native'
 
@@ -23,12 +22,13 @@ const SignupForm = ({ navigation }) => {
           try {
            const authUser = await firebase.auth().createUserWithEmailAndPassword(email, password)
            console.log("Success")
-            firebase.firestore().collection('users').add({
+            firebase.firestore().collection('users').doc(authUser.user.email).set({
             owner_uid: authUser.user.uid,
             username: username, 
             email: authUser.user.email, 
-             profile_picture: 'https://icon-library.com/images/default-user-icon/default-user-icon-8.jpg'
-          })
+            profile_picture: 'https://icon-library.com/images/default-user-icon/default-user-icon-8.jpg',
+            lowerUsername: "@"+username.replace(/\s+/g, '').toLowerCase()
+            })
           } catch(error) {
         console.log(error.message)
           }

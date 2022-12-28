@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
+  StyleSheet
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,7 +26,7 @@ const Post = ({ post }) => {
   const [text, onChangeText] = useState("");
   const [userInfo, setUserInfo] = useState([]);
 
-  const [ReplyModal, setReplyModal] = useState(true);
+  const [ReplyModal, setReplyModal] = useState(false);
   const [followers, setFollowers] = useState([])
   const [following, setFollowing] = useState([])
 
@@ -64,12 +65,39 @@ const Post = ({ post }) => {
       });
   };
 
-  
+
 
   return (
     <View>
+      <Modal
+          animationType="slide"
+          transparent={true}
+          visible={ReplyModal}
+         
+        >
+          <View style={styles.centeredView} >
+            <View style={styles.modalView}>
+             <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Ionicons name="arrow-back" size={24} color="black" onPress={() => setReplyModal(false)}/>
+          <Text style={{fontSize: 16, marginLeft: 4}}>Compose A Reply</Text>
+             </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                 <Text style={{fontSize: 13, marginLeft: 4}}>Replying to</Text>
+           <Text style={{color: 'blue', fontSize: 14}}> @aniketmishra</Text>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center',marginTop: 10, backgroundColor: '#cdcbd2', padding: 5, borderRadius: 8}}>
+              <Feather name="smile" size={20} color="black" />
+                <TextInput placeholder="Say Something...." style={{flex: 1, marginLeft: 8,marginRight: 8}}/>
+                <Feather name="send" size={20} color="black" />
+              </View>
+            </View>
+          </View>
+        </Modal>
       <View style={{ borderBottomWidth: 1, borderColor: "#E2DCDC" }}>
         {/* <Divider width={1} orientaion="vertical"/> */}
+
+        
+
         <PostHeader post={post} navigation={navigation} userInfo={userInfo} />
         <PostBody post={post} />
         <PostFooter
@@ -80,8 +108,9 @@ const Post = ({ post }) => {
           setComments={setComments}
           text={text}
           onChangeText={onChangeText}
-          userInfo={userInfo}
+          setReplyModal={setReplyModal}
         />
+       
       </View>
     </View>
   );
@@ -109,7 +138,7 @@ const PostHeader = ({ post, navigation , follower , following, userInfo }) => (
               follower: follower, 
               following: following,
               email: post.owner_email,
-              userInfo: userInfo,
+              
             })
           }
         >
@@ -176,6 +205,7 @@ const PostFooter = ({
   text,
   onChangeText,
   userInfo,
+  setReplyModal,
 }) => (
   <View style={{ margin: 10 }}>
     <View
@@ -196,7 +226,7 @@ const PostFooter = ({
         <Ionicons name="chatbubble-outline" size={24} color="black" />
         <Text style={{ marginLeft: 4, fontSize: 16 }}>0</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={{ flexDirection: "row" }}>
+      <TouchableOpacity style={{ flexDirection: "row" }} onPress={() => setReplyModal(true)}>
         <Octicons name="reply" size={24} color="black" />
       </TouchableOpacity>
       <TouchableOpacity
@@ -254,5 +284,37 @@ const PostFooter = ({
     
   </View>
 );
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: "#00000aaa",
+   
+  },
+  modalView: {
+    
+    backgroundColor: "white",
+    borderRadius: 2,
+    padding: 10,
+    borderRadius: 14,
+    marginLeft: 10, 
+    marginRight: 10,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+ 
+  modalText: {
+   
+  }
+});
 
 export default Post;

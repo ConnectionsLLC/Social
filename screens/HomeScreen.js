@@ -1,4 +1,4 @@
-import { View, Text, Button, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, Button, StyleSheet, ScrollView, StatusBar } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import { useNavigation } from '@react-navigation/native'
 import  Header  from '../components/Header'
@@ -16,13 +16,18 @@ const HomeScreen = () => {
   
   useEffect(() => {
     firebase.firestore().collectionGroup('posts').onSnapshot(snapshot => {
-    setPosts(snapshot.docs.map(doc => doc.data()))
+    setPosts(snapshot.docs.map(post => ({id: post.id , ...post.data()})))
    })
    
   },[])
   return (
 
     <View style={styles.container}>
+       <StatusBar
+        animated={true}
+
+     
+       />
       <Header/>
        <ScrollView>
         <Stories />
@@ -38,7 +43,8 @@ const HomeScreen = () => {
 }
 const styles = StyleSheet.create({
   container: {
-     backgroundColor: 'white'
+     backgroundColor: 'white',
+     flex: 1
   },
 });
 

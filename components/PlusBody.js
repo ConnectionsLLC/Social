@@ -7,7 +7,7 @@ import { onSnapshot, query, doc, collection, where, updateDoc } from 'firebase/f
 import { useNavigation } from '@react-navigation/native';
 import useAuth from '../hooks/useAuth';
 import * as ImagePicker from 'expo-image-picker';
-import {uploadBytes, ref} from 'firebase/storage'
+import {uploadBytes, ref, getDownloadURL} from 'firebase/storage'
 
 const PlusBody = () => {
   const navigation = useNavigation()
@@ -17,6 +17,7 @@ const PlusBody = () => {
   const [userInfo, setUserInfo] = useState([])
 
   const [image, setImage] = useState(null);
+  const [uri, setUri] = useState("")
 
 const uploadImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -26,13 +27,9 @@ const uploadImage = async () => {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      console.log(image.fileName)
-    }
+      const source = {uri: result.uri}
+      console.log(source); 
+      setImage(source)
   };
 
 useEffect(() => {
@@ -52,26 +49,33 @@ useEffect(() => {
 
 const SubmitPost = async () => {
 if(image){
-const imageRef = ref(firebase.storage(), `images/${image}`)
- uploadBytes(imageRef, image).then(() => {
-  console.log("Image Uploaded!")
- })
+
+   const response = await fetch(image.uri); 
+   const blob = await response.blob();
+   const filename = image.uri.substring(image.uri.lastIndexOf('/')+1); 
+   var imageref = firebase.storage().ref().child(filename).put(blob)
+   const refer =  firebase.storage().ref().child(filename)
+   const downloadURL = await getDownloadURL(refer)
+   setUri(downloadURL)
+
+
 }
 
  const upload = await firebase.firestore().collection("users").doc(user.email).collection('posts').add({
   username: userInfo.username,
    profilePicture: userInfo.profilePicture,
    owner_uid: user.uid, 
+   owner_email: user.email,
    posttext: text, 
    createdAt: firebase.firestore.FieldValue.serverTimestamp(), 
    likes: 0,
+   image: uri,
 likes_by_users: [],
 comments: [],
   lowerUsername: "@" + userInfo.username.replace(/\s+/g,'').toLowerCase(),
  })
 
  
- console.log("ImageUploaded!")
 
 navigation.goBack()
  onChangeText("")
@@ -136,7 +140,7 @@ navigation.goBack()
               <MaterialIcons name="my-location" size={24} color="#0096F6" style={{marginLeft: 10}}/>
             </TouchableOpacity>
           </View>
-          {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+          {/* {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />} */}
       </View>
 
       </View>

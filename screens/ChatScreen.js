@@ -1,10 +1,15 @@
-import { View, Text } from 'react-native'
+import { View, Text, StatusBar } from 'react-native'
 import React from 'react'
 import Header from '../components/Header'
 
 const ChatScreen = () => {
   return (
-    <View style={{ marginTop: 8, }}>
+    <View style={{flex: 1, backgroundColor: 'white'}}>
+      <StatusBar
+        animated={true}
+
+     
+       />
       <Header/>
     </View>
   )

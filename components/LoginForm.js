@@ -1,11 +1,13 @@
 import { View, Text, TextInput,Alert, StyleSheet, Pressable, TouchableOpacity } from 'react-native'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import Validator from 'email-validator'
 import  firebase  from '../firebase'
 import useAuth from '../hooks/useAuth'
 import { useNavigation } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 
 
@@ -15,6 +17,7 @@ const LoginForm = () => {
   const navigation = useNavigation()
 
   const { user } = useAuth()
+
 
 
     const LoginFormSchema = Yup.object().shape({
@@ -27,7 +30,8 @@ const LoginForm = () => {
     const onLogin = async (email, password) => {
       try{
       await firebase.auth().signInWithEmailAndPassword(email, password)
-      await firebase.auth().setPersistence(firebase.auth(), firebase.auth().inMemoryPersistence)
+      await AsyncStorage.setItem('email', email)
+      await AsyncStorage.setItem('password', password)
       console.log("Login Success! 🔥", email, password)
       } catch(error) {
         console.log(error.message);

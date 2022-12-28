@@ -14,6 +14,8 @@ const ProfileScreen = () => {
     const { user } = useAuth()
   const [userInfo, setUserInfo] = useState();
   const navigation = useNavigation()
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
 
   onSnapshot(query(collection(firebase.firestore(), 'users'), where("owner_uid", "==", user.uid)),
     snapshot => {
@@ -22,7 +24,12 @@ const ProfileScreen = () => {
 
     }
   )
-
+  useEffect(() => onSnapshot(collection(firebase.firestore(), 'users', user.email, 'followers'), (snapshot) =>
+  setFollowers(snapshot.docs)), [firebase,user]
+)
+useEffect(() => onSnapshot(collection(firebase.firestore(), 'users', user.email, 'following'), (snapshot) =>
+setFollowing(snapshot.docs)), [firebase, user]
+)
     return (
       <View style={{ flex: 1, backgroundColor: 'white'}}>
       <Header />
@@ -64,11 +71,11 @@ const ProfileScreen = () => {
 
                   <View style={{ marginTop: 10,marginBottom: 10, flexDirection: 'row' }}>
                     <View style={{ flexDirection: 'row', marginRight: 4 }}>
-                      <Text style={{ fontWeight: "600", marginRight: 2 }}>0</Text>
+                      <Text style={{ fontWeight: "600", marginRight: 2 }}>{followers.length}</Text>
                       <Text>Followers</Text>
                     </View>
                     <View style={{ flexDirection: 'row' }}>
-                      <Text style={{ fontWeight: "600", marginRight: 2 }}>0</Text>
+                      <Text style={{ fontWeight: "600", marginRight: 2 }}>{following.length}</Text>
                       <Text>Following</Text>
                     </View>
                   </View>

@@ -15,7 +15,7 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import firebase from "../firebase";
 import useAuth from "../hooks/useAuth";
-import { onSnapshot, query, doc, collection, where } from "firebase/firestore";
+import { onSnapshot, query, doc, collection, where, addDoc } from "firebase/firestore";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 const Post = ({ post }) => {
@@ -37,7 +37,7 @@ const Post = ({ post }) => {
       where("owner_uid", "==", user.uid)
     ),
     (snapshot) => {
-      setUserInfo(snapshot.docs.map(info => info.data()));
+      setUserInfo(snapshot.docs.map(info => ({id: info.id , ...info.data()})));
     }
   );
 
@@ -62,20 +62,16 @@ const Post = ({ post }) => {
       });
   };
 
-const handleSubmit = (postInfo, text, onChangeText) => {
-  firebase.firestore()
+const handleSubmit = async () => {
+   firebase.firestore()
   .collection("users")
   .doc(postInfo.owner_email)
   .collection("posts")
   .doc(postInfo.id)
   .update({
    comments: firebase.firestore.FieldValue.arrayUnion({user: user.email, replyText: text})
-  }).then(() => {
-    console.log("Document Updated!")
-    onChangeText("")
-    setReplyModal(false)
   })
-  
+  setReplyModal(false)
 }
 
   return (
@@ -84,8 +80,7 @@ const handleSubmit = (postInfo, text, onChangeText) => {
           animationType="slide"
           transparent={true}
           visible={ReplyModal}
-          value={text}
-          onChangeText={onChangeText}
+        
         >
           <View style={styles.centeredView} >
             <View style={styles.modalView}>
@@ -99,8 +94,8 @@ const handleSubmit = (postInfo, text, onChangeText) => {
               </View>
             <View style={{flexDirection: 'row', alignItems: 'center',marginTop: 18, backgroundColor: '#E9E9E9', padding: 5, borderRadius: 8}}>
               <Feather name="smile" size={20} color="black" />
-                <TextInput placeholder="Say Something...." style={{flex: 1, marginLeft: 8,marginRight: 8}}/>
-                <Feather name="send" size={20} color="black" onPress={() => handleSubmit(postInfo, text, onChangeText)}/>
+                <TextInput placeholder="Say Something...." style={{flex: 1, marginLeft: 8,marginRight: 8}} value={text} onChangeText={onChangeText}/>
+                <Feather name="send" size={20} color="black" onPress={handleSubmit}/>
               </View>
             </View>
           </View>
@@ -157,10 +152,12 @@ const PostHeader = ({ post, navigation , follower , following, userInfo }) => (
         >
           {post.username}
         </Text>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={{ marginLeft: 4, fontSize: 10 }}>
+        <View style={{ flexDirection: "row", alignItems: 'center' }}>
+          <Text style={{ marginLeft: 4, fontSize: 12 }}>
             {post.lowerUsername}
           </Text>
+          <Text> | </Text>
+          <Text style={{marginLeft: 4, fontSize: 12 }}>10 mins ago</Text>
         </View>
       </View>
     </View>
@@ -176,7 +173,7 @@ const PostBody = ({ post }) => (
         marginLeft: 15,
         marginRight: 15,
         marginTop: 10,
-        marginBottom: 10,
+        
       }}
     >
       <Text style={{ fontSize: 15, fontWeight: "400" }}>{post.posttext} </Text>
@@ -203,9 +200,7 @@ const PostBody = ({ post }) => (
         flexDirection: "row",
       }}
     >
-      <Text style={{ color: "grey", fontStyle: "bold" }}>10:00 PM</Text>
-      <Text> | </Text>
-      <Text style={{ color: "grey" }}>24th December 2022</Text>
+     
     </View>
   </View>
 );
@@ -263,40 +258,42 @@ const PostFooter = ({
 
 
     {comments == true && (
-      <View style={{ marginTop: 10, width: "100%" }}>
-        <View style={{ flexDirection: "row" }}>
-          <Image
-            style={{ width: 24, height: 24, borderRadius: 50, marginLeft: 4 }}
-            source={{ uri: post.profilePicture }}
-          />
-          <View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ marginLeft: 4 }}>Aniket Mishra </Text>
-                <Text >  |  </Text>
-                <Text style={{ marginRight: 4, fontSize: 12 }}>10 min ago</Text>
-              </View>
-             
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 4,
-              }}
-            >
-              <Text style={{ fontSize: 12 }}>Replying to </Text>
-              <Text style={{ fontSize: 12, color: "blue" }}>@aniketmishra</Text>
-            </View>
-   
-        {post.comments?.map(comment => {
-           <Text style={{ marginLeft: 4 }}>{comment.data()?.replyText} </Text>
-        })}
+       <View style={{ marginTop: 10, width: "100%", }}>
+       {post.comments.map((comment, index) => (
+        
+         <View style={{ flexDirection: "row", marginBottom: 4 }}>
+           <Image
+             style={{ width: 24, height: 24, borderRadius: 50, marginLeft: 4 }}
+             source={{ uri: post.profilePicture }}
+           />
+           <View>
+             <View style={{ flexDirection: "row", alignItems: "center" }}>
+               <View style={{ flexDirection: "row", alignItems: "center" }}>
+                 <Text style={{ marginLeft: 4 }}>Aniket Mishra </Text>
+                 <Text >  |  </Text>
+                 <Text style={{ marginRight: 4, fontSize: 12 }}>10 min ago</Text>
+               </View>
+              
+             </View>
+             <View
+               style={{
+                 flexDirection: "row",
+                 alignItems: "center",
+                 marginLeft: 4,
+               }}
+             >
+               <Text style={{ fontSize: 12, fontWeight: '100' }}>Replying to </Text>
+               <Text style={{ fontSize: 12, color: "blue" }}>@aniketmishra</Text>
+             </View>
+ 
+             <Text style={{marginLeft: 4}}>{comment.replyText}</Text>
+             </View>
+         </View>
+      ))}
        
+       </View>
     
-          </View>
-        </View>
-      </View>
+         
     )}
 
 

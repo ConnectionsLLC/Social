@@ -145,7 +145,7 @@ setFollowing(snapshot.docs)), [firebase,email]
               </Text>
             )}
 
-            {user.uid != uid && hasFollowed ? (
+            {hasFollowed ? (
               <Pressable
                 style={{
                   borderWidth: 1,

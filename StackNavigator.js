@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, StyleSheet } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from './screens/HomeScreen';
@@ -11,6 +11,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import HomeNavigation from './Navigation/HomeNavigation';
 import ProfileScreen from './screens/ProfileScreen';
 import ProfileNavigaton from './Navigation/ProfileNavigation';
+import { BlurView } from 'expo-blur';
+import ChatNavigation from './Navigation/ChatNavigation';
+import { getFocusedRouteNameFromRoute, useNavigation, useRoute } from '@react-navigation/native';
 
 
 const Stack = createBottomTabNavigator();
@@ -18,8 +21,12 @@ const Sck2ta = createNativeStackNavigator();
 
 const StackNavigator = () => {
   const { user } = useAuth()
+  const navigation = useNavigation()
   
 
+ 
+        
+    
   
   
   return (
@@ -31,12 +38,14 @@ const StackNavigator = () => {
         headerShown: false,
         tabBarShowLabel: false,
         // tabBarBackground: () => (
-        //   <BlurView tint="light" intensity={100} style={StyleSheet.absoluteFill} />
+        //   <BlurView tint="light" intensity={300} style={StyleSheet.absoluteFill} />
         // ),
+        
+        
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           let iconColor;
-
+         
           if (route.name === 'Home') {
 
             iconName = focused
@@ -73,18 +82,21 @@ const StackNavigator = () => {
               ? 'black'
               : "black"
           }
+         
 
           // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={iconColor} />;
+          return <Ionicons name={iconName} size={24} color={iconColor} />;
           ;
         },
         tabBarActiveTintColor: 'blue',
         tabBarInactiveTintColor: 'gray',
       })}>
+
+        
             {user ? (
               <>
           <Stack.Screen name="Home" component={HomeNavigation}  />
-          <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="Chat" component={ChatNavigation} />
           <Stack.Screen name="Profile" component={ProfileNavigaton} />
 
          

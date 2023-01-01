@@ -25,13 +25,10 @@ const Post = ({ post }) => {
   const [comments, setComments] = useState(false);
   const [text, onChangeText] = useState("");
   const [userInfo, setUserInfo] = useState([]);
-
+  const [postInfo, setPostInfo] = useState([])
   const [ReplyModal, setReplyModal] = useState(false);
   const [followers, setFollowers] = useState([])
   const [following, setFollowing] = useState([])
-
-  
-
 
 
   onSnapshot(
@@ -65,7 +62,21 @@ const Post = ({ post }) => {
       });
   };
 
-
+const handleSubmit = (postInfo, text, onChangeText) => {
+  firebase.firestore()
+  .collection("users")
+  .doc(postInfo.owner_email)
+  .collection("posts")
+  .doc(postInfo.id)
+  .update({
+   comments: firebase.firestore.FieldValue.arrayUnion({user: user.email, replyText: text})
+  }).then(() => {
+    console.log("Document Updated!")
+    onChangeText("")
+    setReplyModal(false)
+  })
+  
+}
 
   return (
     <View>
@@ -73,22 +84,23 @@ const Post = ({ post }) => {
           animationType="slide"
           transparent={true}
           visible={ReplyModal}
-         
+          value={text}
+          onChangeText={onChangeText}
         >
           <View style={styles.centeredView} >
             <View style={styles.modalView}>
              <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Ionicons name="arrow-back" size={24} color="black" onPress={() => setReplyModal(false)}/>
-          <Text style={{fontSize: 16, marginLeft: 4}}>Compose A Reply</Text>
+          <Text style={{fontSize: 15, marginLeft: 4}}>Compose A Reply</Text>
              </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 2, marginleft:10}}>
                  <Text style={{fontSize: 13, marginLeft: 4}}>Replying to</Text>
-           <Text style={{color: 'blue', fontSize: 14}}> @aniketmishra</Text>
+           <Text style={{color: '#7EA8F7', fontSize: 13}}> {postInfo.lowerUsername}</Text>
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center',marginTop: 10, backgroundColor: '#cdcbd2', padding: 5, borderRadius: 8}}>
+            <View style={{flexDirection: 'row', alignItems: 'center',marginTop: 18, backgroundColor: '#E9E9E9', padding: 5, borderRadius: 8}}>
               <Feather name="smile" size={20} color="black" />
                 <TextInput placeholder="Say Something...." style={{flex: 1, marginLeft: 8,marginRight: 8}}/>
-                <Feather name="send" size={20} color="black" />
+                <Feather name="send" size={20} color="black" onPress={() => handleSubmit(postInfo, text, onChangeText)}/>
               </View>
             </View>
           </View>
@@ -109,6 +121,7 @@ const Post = ({ post }) => {
           text={text}
           onChangeText={onChangeText}
           setReplyModal={setReplyModal}
+          setPostInfo={setPostInfo}
         />
        
       </View>
@@ -206,6 +219,7 @@ const PostFooter = ({
   onChangeText,
   userInfo,
   setReplyModal,
+  setPostInfo,
 }) => (
   <View style={{ margin: 10 }}>
     <View
@@ -224,9 +238,9 @@ const PostFooter = ({
         }
       >
         <Ionicons name="chatbubble-outline" size={24} color="black" />
-        <Text style={{ marginLeft: 4, fontSize: 16 }}>0</Text>
+        <Text style={{ marginLeft: 4, fontSize: 16 }}>{post.comments.length}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={{ flexDirection: "row" }} onPress={() => setReplyModal(true)}>
+      <TouchableOpacity style={{ flexDirection: "row" }} onPress={() => { setReplyModal(true); setPostInfo(post)}}>
         <Octicons name="reply" size={24} color="black" />
       </TouchableOpacity>
       <TouchableOpacity
@@ -274,7 +288,12 @@ const PostFooter = ({
               <Text style={{ fontSize: 12 }}>Replying to </Text>
               <Text style={{ fontSize: 12, color: "blue" }}>@aniketmishra</Text>
             </View>
-            <Text style={{ marginLeft: 4 }}>Do you consider yourself </Text>
+   
+        {post.comments?.map(comment => {
+           <Text style={{ marginLeft: 4 }}>{comment.data()?.replyText} </Text>
+        })}
+       
+    
           </View>
         </View>
       </View>

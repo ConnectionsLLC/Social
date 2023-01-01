@@ -13,7 +13,7 @@ const Stories = () => {
     ])
   return (
      <View>
-         <View style={{ marginBottom: 13,marginTop: 10 }}>
+         <View style={{ marginBottom: 13,marginTop: 10, marginLeft: 5 }}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
 
             
